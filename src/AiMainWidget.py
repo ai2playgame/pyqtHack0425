@@ -1,8 +1,8 @@
 from PyQt5.QtWidgets import QWidget, QLabel
-from pixSubModule import multiQPixMap
+import pickItem
 
 
-class mainWidget(QWidget):
+class MainWidget(QWidget):
     def __init__(self):
         super().__init__()
         self.title = 'PyQt Project'
@@ -19,9 +19,9 @@ class mainWidget(QWidget):
 
         # Create Widget
         label = QLabel(self)
-        label.setPixmap(self.studentImg.getImg(0))
+        label.setPixmap(self.items.getRandomImgCopy())
         label.move(500, 50)
         self.show()
 
     def preLoadImg(self):
-        self.studentImg = multiQPixMap("../img/normalStudent.png")
+        self.items = pickItem.PlusItem()
