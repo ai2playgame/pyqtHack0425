@@ -7,16 +7,16 @@ from PyQt5.QtGui import QPixmap
 class MainWidget(QWidget):
 
     tateCoords = [0, 50, 100, 150, 200]
-    playeryokoCoord = 700
-    yokoCoords = [0, 100, 200, 300, 400, 500, 600, 700]
+    playeryokoCoord = 600
+    yokoCoords = [0, 100, 200, 300, 400, 500, 600]
 
     def __init__(self):
         super().__init__()
         self.title = 'PyQt Project'
         self.left = 300
-        self.top = 300
+        self.top = 0
         self.width = 250
-        self.height = 900
+        self.height = 700
         self.preLoadImg()
         self.initUI()
 
@@ -27,14 +27,21 @@ class MainWidget(QWidget):
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update)
         # TODO: timerのスピードを変える
-        self.timer.start(100)
-        self.updateCount = 0
+        # self.timer.start(100)
+        # self.updateCount = 0
+
         # TODO: updateCountLimitを乱数に
         self.updateCountLimit = 2
+
+        # item用のラベルを保持する配列
         self.itemLabels = []
 
-        self.playerLabel = QLabel()
-        self.playerLabel.setPixmap(QPixmap('../img/normalStudent.png'))
+        self.playerPix = QPixmap('../img/normalStudent.png')
+        self.playerLabel = QLabel(self)
+        self.playerLabel.setPixmap(self.playerPix)
+
+        self.playerLabel.move(MainWidget.tateCoords[2],
+                              MainWidget.playeryokoCoord)
 
         self.show()
 
@@ -43,4 +50,6 @@ class MainWidget(QWidget):
         self.minusItemsPix = pickItem.MinusItem()
 
     def update(self):
-        pass
+        if self.updateCount >= self.updateCountLimit:
+            pass
+        self.show()
