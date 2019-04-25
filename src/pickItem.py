@@ -8,12 +8,16 @@ class PickItemBase():
         self.imgs = []
         for i in args:
             self.imgs.append(QPixmap(i))
+        self.imgsPath = args
 
     def getImgCopy(self, index):
         return (self.__imgs.getImg())
 
     def getRandomImgCopy(self):
         return (random.choice(self.imgs))
+
+    def getRandomImgPath(self):
+        return random.choice(self.imgs)
 
 
 class PlusItem(PickItemBase):

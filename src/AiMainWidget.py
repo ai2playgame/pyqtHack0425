@@ -38,9 +38,9 @@ class MainWidget(QWidget):
         # item用のラベルを保持する配列
         self.itemLabels = []
 
-        self.playerPix = QPixmap('../img/normalStudent.png')
+        # self.playerPix = QPixmap('../img/normalStudent.png')
         self.playerLabel = QLabel(self)
-        self.playerLabel.setPixmap(self.playerPix)
+        self.playerLabel.setPixmap(QPixmap('../img/normalStudent.png'))
 
         self.playerLabel.move(MainWidget.tateCoords[2],
                               MainWidget.playeryokoCoord)
@@ -94,9 +94,11 @@ class MainWidget(QWidget):
     def dummy(self):
 
         if True:
+            print('dummy')
             tLabel = QLabel(self)
-            tLabel.setPixmap(self.plusItemsPix.getRandomImgCopy())
+            tLabel.setPixmap(QPixmap(self.plusItemsPix.getRandomImgPath()))
             tLabel.move(0, 0)
+            self.show()
 
     def keyPressEvent(self, event):
         key = event.key()
@@ -110,3 +112,9 @@ class MainWidget(QWidget):
                 self.playerLabel.move(
                     self.playerLabel.x() + 100, self.playerLabel.y()
                 )
+
+    def checkCross(self, event):
+        for label in self.itemLabels:
+            if label.x() == self.playerLabel.x() and label.y() == self.playerLabel.y():
+                if type(label) is (pickItem.MinusItem):
+                    self.timer.stop()
