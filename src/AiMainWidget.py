@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import QWidget, QLabel
 import pickItem
 from PyQt5.QtCore import QTimer
 from PyQt5.QtGui import QPixmap
+import random
 
 
 class MainWidget(QWidget):
@@ -27,11 +28,11 @@ class MainWidget(QWidget):
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update)
         # TODO: timerのスピードを変える
-        # self.timer.start(100)
-        # self.updateCount = 0
+        self.timer.start(1000)
+        self.updateCount = 0
 
         # TODO: updateCountLimitを乱数に
-        self.updateCountLimit = 2
+        self.updateCountLimit = 1
 
         # item用のラベルを保持する配列
         self.itemLabels = []
@@ -50,6 +51,44 @@ class MainWidget(QWidget):
         self.minusItemsPix = pickItem.MinusItem()
 
     def update(self):
+        print("update! {0}".format(self.updateCount))
         if self.updateCount >= self.updateCountLimit:
-            pass
+            # 新規生成
+            self.updateCount = 0
+            label = QLabel(self)
+            label.move(self.selectStartX(), MainWidget.yokoCoords[0])
+            if random.random() <= 0.5:
+                # 8割の確率で障害物が降ってくる
+                print("minus")
+                label = QLabel(self)
+                label.move(self.selectStartX(), MainWidget.yokoCoords[0])
+                label.setPixmap(self.minusItemsPix.getRandomImgCopy())
+                self.itemLabels.append(label)
+            else:
+                print("plus")
+                label = QLabel(self)
+                label.setPixmap(self.plusItemsPix.getRandomImgCopy())
+                self.itemLabels.append(label)
+        else:
+            self.updateCount += 1
+
+        self.allItemsMove()
+        self.ItemDelete()
+
         self.show()
+
+    def selectYokoCoord(self):
+        return random.choice(MainWidget.yokoCoords)
+
+    def allItemsMove(self):
+        for label in self.itemLabels:
+            label.move(label.x(), label.y() + 100)
+
+    def ItemDelete(self):
+        for label in self.itemLabels[:]:
+            if label.y() >= MainWidget.playeryokoCoord:
+                print("Delete {0}, {1}".format(label.x(), label.y()))
+                self.itemLabels.remove(label)
+
+    def selectStartX(self):
+        return random.choice(MainWidget.tateCoords)
