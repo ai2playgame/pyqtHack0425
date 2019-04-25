@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QWidget, QLabel
 import pickItem
-from PyQt5.QtCore import QTimer
+from PyQt5.QtCore import QTimer, Qt
 from PyQt5.QtGui import QPixmap
 import random
 
@@ -20,6 +20,7 @@ class MainWidget(QWidget):
         self.height = 700
         self.preLoadImg()
         self.initUI()
+        self.dummy()
 
     def initUI(self):
         self.setWindowTitle(self.title)
@@ -28,7 +29,7 @@ class MainWidget(QWidget):
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update)
         # TODO: timerのスピードを変える
-        self.timer.start(1000)
+        # self.timer.start(1000)
         self.updateCount = 0
 
         # TODO: updateCountLimitを乱数に
@@ -60,13 +61,10 @@ class MainWidget(QWidget):
             if random.random() <= 0.5:
                 # 8割の確率で障害物が降ってくる
                 print("minus")
-                label = QLabel(self)
-                label.move(self.selectStartX(), MainWidget.yokoCoords[0])
                 label.setPixmap(self.minusItemsPix.getRandomImgCopy())
-                self.itemLabels.append(label)
+                # self.itemLabels.append(label)
             else:
                 print("plus")
-                label = QLabel(self)
                 label.setPixmap(self.plusItemsPix.getRandomImgCopy())
                 self.itemLabels.append(label)
         else:
@@ -92,3 +90,23 @@ class MainWidget(QWidget):
 
     def selectStartX(self):
         return random.choice(MainWidget.tateCoords)
+
+    def dummy(self):
+
+        if True:
+            tLabel = QLabel(self)
+            tLabel.setPixmap(self.plusItemsPix.getRandomImgCopy())
+            tLabel.move(0, 0)
+
+    def keyPressEvent(self, event):
+        key = event.key()
+
+        if key == Qt.Key_Left:
+            if self.playerLabel.x() > MainWidget.tateCoords[0]:
+                self.playerLabel.move(
+                    self.playerLabel.x() - 100, self.playerLabel.y())
+        if key == Qt.Key_Right:
+            if self.playerLabel.x() < MainWidget.tateCoords[4]:
+                self.playerLabel.move(
+                    self.playerLabel.x() + 100, self.playerLabel.y()
+                )
