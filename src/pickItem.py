@@ -9,6 +9,7 @@ class PickItemBase():
         for i in args:
             self.imgs.append(QPixmap(i))
         self.imgsPath = args
+        self.gameoverFlag = False
 
     def getImgCopy(self, index):
         return (self.__imgs.getImg())

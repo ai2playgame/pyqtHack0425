@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QWidget, QLabel
 import pickItem
 from PyQt5.QtCore import QTimer, Qt
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QFont
 import random
 
 
@@ -20,7 +20,6 @@ class MainWidget(QWidget):
         self.height = 700
         self.preLoadImg()
         self.initUI()
-        self.dummy()
 
     def initUI(self):
         self.setWindowTitle(self.title)
@@ -29,14 +28,21 @@ class MainWidget(QWidget):
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update)
         # TODO: timerのスピードを変える
-        # self.timer.start(1000)
+        self.timerspeed = 1000
+        self.timer.start(1000)
         self.updateCount = 0
+        self.dropCount = 0
+        self.dropCountLimit = 5
 
         # TODO: updateCountLimitを乱数に
         self.updateCountLimit = 1
 
         # item用のラベルを保持する配列
         self.itemLabels = []
+
+        self.font = QFont()
+        self.font.setBold(True)
+        self.font.setPointSize(20)
 
         # self.playerPix = QPixmap('../img/normalStudent.png')
         self.playerLabel = QLabel(self)
@@ -58,22 +64,26 @@ class MainWidget(QWidget):
             self.updateCount = 0
             label = QLabel(self)
             label.move(self.selectStartX(), MainWidget.yokoCoords[0])
-            if random.random() <= 0.5:
-                # 8割の確率で障害物が降ってくる
-                print("minus")
-                label.setPixmap(self.minusItemsPix.getRandomImgCopy())
-                # self.itemLabels.append(label)
-            else:
-                print("plus")
-                label.setPixmap(self.plusItemsPix.getRandomImgCopy())
-                self.itemLabels.append(label)
+            print("minus")
+            # label.setPixmap(QPixmap(self.minusItemsPix.getRandomImgPath()))
+            label.setFont(self.font)
+            label.setText('薬物')
+            self.itemLabels.append(label)
+            self.dropCount += 1
         else:
             self.updateCount += 1
 
+        if self.dropCount >= self.dropCountLimit:
+            self.timerspeed *= 0.8
+            self.timer.start(self.timerspeed)
+            self.dropCount = 0
+
         self.allItemsMove()
+        gameOverFlag = self.checkCross()
         self.ItemDelete()
 
-        self.show()
+        if gameOverFlag:
+            self.timer.stop()
 
     def selectYokoCoord(self):
         return random.choice(MainWidget.yokoCoords)
@@ -81,11 +91,13 @@ class MainWidget(QWidget):
     def allItemsMove(self):
         for label in self.itemLabels:
             label.move(label.x(), label.y() + 100)
+            label.show()
 
     def ItemDelete(self):
         for label in self.itemLabels[:]:
-            if label.y() >= MainWidget.playeryokoCoord:
+            if label.y() > MainWidget.playeryokoCoord:
                 print("Delete {0}, {1}".format(label.x(), label.y()))
+
                 self.itemLabels.remove(label)
 
     def selectStartX(self):
@@ -106,15 +118,18 @@ class MainWidget(QWidget):
         if key == Qt.Key_Left:
             if self.playerLabel.x() > MainWidget.tateCoords[0]:
                 self.playerLabel.move(
-                    self.playerLabel.x() - 100, self.playerLabel.y())
+                    self.playerLabel.x() - 50, self.playerLabel.y())
         if key == Qt.Key_Right:
             if self.playerLabel.x() < MainWidget.tateCoords[4]:
                 self.playerLabel.move(
-                    self.playerLabel.x() + 100, self.playerLabel.y()
+                    self.playerLabel.x() + 50, self.playerLabel.y()
                 )
 
-    def checkCross(self, event):
+    def checkCross(self):
         for label in self.itemLabels:
+            print('Item:({}, {}) player({}, {})'.format(
+                label.x(), label.y(), self.playerLabel.x(), self.playerLabel.y()))
             if label.x() == self.playerLabel.x() and label.y() == self.playerLabel.y():
-                if type(label) is (pickItem.MinusItem):
-                    self.timer.stop()
+                return True
+
+        return False
