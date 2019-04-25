@@ -28,11 +28,12 @@ class MainWidget(QWidget):
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update)
         # TODO: timerのスピードを変える
-        self.timerspeed = 1000
-        self.timer.start(1000)
+        self.timerspeed = 800
+        self.timer.start(self.timerspeed)
         self.updateCount = 0
         self.dropCount = 0
-        self.dropCountLimit = 5
+        self.dropCountLimit = 6
+        self.score = 0
 
         # TODO: updateCountLimitを乱数に
         self.updateCountLimit = 1
@@ -74,7 +75,7 @@ class MainWidget(QWidget):
             self.updateCount += 1
 
         if self.dropCount >= self.dropCountLimit:
-            self.timerspeed *= 0.8
+            self.timerspeed *= 0.9
             self.timer.start(self.timerspeed)
             self.dropCount = 0
 
@@ -83,6 +84,7 @@ class MainWidget(QWidget):
         self.ItemDelete()
 
         if gameOverFlag:
+            print('socre: {}'.format(self.score))
             self.timer.stop()
 
     def selectYokoCoord(self):
@@ -99,6 +101,7 @@ class MainWidget(QWidget):
                 print("Delete {0}, {1}".format(label.x(), label.y()))
 
                 self.itemLabels.remove(label)
+                self.score += 1
 
     def selectStartX(self):
         return random.choice(MainWidget.tateCoords)
